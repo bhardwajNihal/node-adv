@@ -8,7 +8,7 @@ const server = new http.createServer((req, res) => {
 
     let curr_logs = `[${Date.now()}] ${url} ${method}`
 
-    fs.appendFileSync("logs.js", `\n${curr_logs}`)
+    fs.appendFileSync("logs.txt", `\n${curr_logs}`)
 
     switch(method){
  
