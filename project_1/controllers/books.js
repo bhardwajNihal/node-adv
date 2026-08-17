@@ -1,13 +1,14 @@
 // defining controllers
 // this time with db
 
+import { eq } from "drizzle-orm";
 import { authorsTable } from "../models/authors.model.js";
 import { booksTable } from "../models/books.model.js";
 import { db } from "../src/db/index.js";
 
 
 // to get all books
-async function getAllBooks(req, res) {
+export async function getAllBooks(req, res) {
     
     const books = await db.select().from(booksTable);
 
@@ -15,31 +16,34 @@ async function getAllBooks(req, res) {
 }
 
 // to get books by name
-async function getBookByName(req, res) {
+export async function getBookByTitle(req, res) {
     
-    const {name} = req.body;
+    const {title} = req.params;
 
-    const book = await db.select().from(booksTable).where(eq(booksTable.name == name));
+    const book = await db.select().from(booksTable).where(eq(booksTable.title, title));
 
-    if(!book) return res.status(404).send("book not found!");
+    if(book.length == 0) return res.status(404).send("book not found!");
 
     return res.status(200).send(book);
 }
 
 
 // to get books by authorname
-async function getBookByName(req, res) {
+export async function getBookByAuthor(req, res) {
     
-    const {authorName} = req.body;
-
+    const {authorName} = req.params;
+    console.log(authorName);
+    
     // find the authorId 1st
-    const author = await db.select().from(authorsTable).where(eq(authorsTable.name == authorName));
+    const author = await db.select().from(authorsTable).where(eq(authorsTable.name, authorName));
+    console.log(author);
     
-    if(!author) res.status(400).send("Author not found!")
+    if(author.length == 0) return res.status(400).send("Author not found!")
+    console.log(author);
 
-    const book = await db.select().from(booksTable).where(eq(booksTable.authorId == author.id));
+    const book = await db.select().from(booksTable).where(eq(booksTable.authorId, author[0].id));
 
-    if(!book) return res.status(404).send("book not found!");
+    if(book.length==0) return res.status(404).send("book not found!");
 
     return res.status(200).send(book);
 }

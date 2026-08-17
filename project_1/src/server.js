@@ -1,14 +1,18 @@
 
+// entry point for the app
 
-import dotenv from 'dotenv';
-dotenv.config();
-import {drizzle} from 'drizzle-orm/neon-http'
+import express from "express"
+import { bookRouter } from "../routes/book.routes.js";
+import { authorRouter } from "../routes/author.routes.js";
 
-// initializing db connection, using connection string
+const app = express();
 
-const db = drizzle(process.env.DATABASE_URL);
+app.use("/books", bookRouter);
+app.use("/authors", authorRouter);
 
-async () => {
+
+app.listen(3000, ()=> {
+
+    console.log("server active at port 3000");
     
-    await db.connect()
-}
+})
