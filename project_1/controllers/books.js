@@ -47,3 +47,48 @@ export async function getBookByAuthor(req, res) {
 
     return res.status(200).send(book);
 }
+
+
+// controller to add book
+export async function addBook(req, res){
+
+    const {title, description, authorId} = req.body;
+    console.log(title, description);
+    
+    
+    if(!title || !description || !authorId) return res.status(400).send("all details are required!");
+
+    const newBook = {
+        title, description, authorId
+    }
+
+    const bookAdded = await db.insert(booksTable).values(newBook).returning({id : booksTable.id})
+
+    return res.status(201).json({
+        message : "book added !", 
+        id : bookAdded[0].id
+    })
+
+}
+
+
+// controller to delete a book, given it's id
+
+export async function deleteBook(req, res) {
+    
+    const {bookId} = req.body;
+
+    // find if book exists 
+    const book = await db.select().from(booksTable).where(eq(booksTable.id, bookId));
+
+    console.log(book);
+    
+    if(book.length == 0) return res.status(400).json("book not found!")
+
+    const bookDeleted = await db.delete(booksTable).where(eq(booksTable.id, book[0].id)).returning({id : booksTable.id});
+
+    return res.status(200).json({
+        message : "book deleted!", 
+        id : bookDeleted
+    })
+}
