@@ -66,6 +66,12 @@ userRouter.post("/signin", async(req, res) => {
 
     if(!isPasswordCorrect) res.status(400).send("incorrect password!!");
 
+    // create session for the user logged in, in the db, used to authenticate every subsequent request
+    // hence called the session based authentication
+    // it's stateful, i.e. the session data is stored in the db
+    // so db call is made on every request, thus making it slow and a heavy operation
+    // but it's secure and gives the server more control over user activities
+    // that's why banking systems use session based authentication
     const session = await db.insert(sessionsTable).values({
         userId : foundUser[0].id
     }).returning({id : sessionsTable.id});
