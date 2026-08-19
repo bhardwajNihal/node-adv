@@ -3,7 +3,7 @@
 
 import express from "express"
 import { db } from "../db/index.js";
-import { usersTable } from "../db/schema.js";
+import { sessionsTable, usersTable } from "../db/schema.js";
 import { eq, hammingDistance } from "drizzle-orm";
 import bcrypt from "bcrypt"
 
@@ -51,7 +51,7 @@ userRouter.post("/signup", async(req, res) => {
 // take the creds from the body
 // check if user is registered i.e. signed up
 // compare password
-// respond success and a token, that the user stores as session cookies or in localstorage to be sent in subsequest requests for authorization
+// if succes, create a session in the session's table and return the sessionId
 userRouter.post("/signin", async(req, res) => {
 
     const {email, password} = req.body;
@@ -66,13 +66,13 @@ userRouter.post("/signin", async(req, res) => {
 
     if(!isPasswordCorrect) res.status(400).send("incorrect password!!");
 
-    // finally
-    // generate token and send as response
-    const token = Date.now();
+    const session = await db.insert(sessionsTable).values({
+        userId : foundUser[0].id
+    }).returning({id : sessionsTable.id});
 
     res.status(200).json({
-        status : "successfully logged-in!",
-        token : token
+        message : "successfully logged-in!",
+        session
     })
 
 
