@@ -1,7 +1,7 @@
 // defining controllers
 // this time with db
 
-import { eq } from "drizzle-orm";
+import { eq, ilike, sql } from "drizzle-orm";
 import { authorsTable } from "../models/authors.model.js";
 import { booksTable } from "../models/books.model.js";
 import { db } from "../src/db/index.js";
@@ -9,7 +9,28 @@ import { db } from "../src/db/index.js";
 
 // to get all books
 export async function getAllBooks(req, res) {
+
+    // if the query has a 'search' parameter
+    // then find and return books, based on the matching keyword
+
+    // for that will use an inbuild method "ilike" by the drizzle
+    // where it fetches and returns data from the db, that mathches the given regex like expresion
+    // for example - ilike(book.title, '%work%'), will return all the books where title has 'work' in any part of it
     
+    const keyword = req.query.search;
+    
+    if(keyword) {
+
+        const matchingBooks = await db
+        .select()
+        .from(booksTable)
+        // .where(ilike(booksTable.title, `%${keyword}%`))      // pattern matching query using ilike, not efficient
+        .where(sql`to_tsvector('english', ${booksTable.title}) @@ to_tsquery('english', ${keyword})`)       // efficient query using indexing 
+    
+        return res.status(200).send(matchingBooks)
+    }
+    
+    // if no search parameter in the query, simply return all the books
     const books = await db.select().from(booksTable);
 
     return res.status(200).send(books);

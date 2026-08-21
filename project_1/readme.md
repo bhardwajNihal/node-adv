@@ -1,5 +1,10 @@
 
-# setting up drizzle orm for postgresql db from neon db
+
+# a basic backend for a book store app
+
+
+
+- setting up drizzle orm for postgresql db from neon db
 
 
 -
@@ -45,3 +50,10 @@
 
 - finally --> npx drizzle-kit push
     - to add the tables to the remote db
+
+- controllers and routes for books and author related cruds
+    - added keyword based search while querying book
+
+    - for faster, more efficient query based on search , added indexing to the books table
+    - 1. add index to the books table schema
+    - 2. made changes to the getBooks controller, added index based query
