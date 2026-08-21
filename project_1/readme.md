@@ -3,7 +3,7 @@
 # a basic backend for a book store app
 
 
-
+- using pnpm package manager
 - setting up drizzle orm for postgresql db from neon db
 
 

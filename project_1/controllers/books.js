@@ -41,7 +41,11 @@ export async function getBookByTitle(req, res) {
     
     const {title} = req.params;
 
-    const book = await db.select().from(booksTable).where(eq(booksTable.title, title));
+    const book = await db
+    .select()
+    .from(booksTable)
+    .where(eq(booksTable.title, title))
+    .rightJoin(authorsTable, eq(authorsTable.id, booksTable.authorId))
 
     if(book.length == 0) return res.status(404).send("book not found!");
 
@@ -62,7 +66,10 @@ export async function getBookByAuthor(req, res) {
     if(author.length == 0) return res.status(400).send("Author not found!")
     console.log(author);
 
-    const book = await db.select().from(booksTable).where(eq(booksTable.authorId, author[0].id));
+    const book = await db
+    .select()
+    .from(booksTable)
+    .where(eq(booksTable.authorId, author[0].id))
 
     if(book.length==0) return res.status(404).send("book not found!");
 
