@@ -82,13 +82,15 @@ urlRouter.get("/:shorturl", async (req, res) => {
 })
 
 
-// // get all urls created by the logged-in user
-// urlRouter.get("/urls", (req, res) => {
+// easy cruds
+
+// // get all urls created by the logged-in user✅
+// urlRouter.get("/urls", async(req, res) => {
 
 // })
 
 
-// // delete a url
+// // delete a url✅
 // urlRouter.delete("/urls/:url", (req, res) => {
 
 // } )
