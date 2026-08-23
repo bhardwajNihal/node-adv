@@ -44,7 +44,7 @@ export const authMiddleware = async(req, res, next) => {
     const userId = decodedToken.id;
     // console.log("user id : ",userId);
     
-    const user = await db.select().from(usersTable).where(eq(usersTable.id, userId))
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId))
     // console.log(user);
     
     req.user = user;
