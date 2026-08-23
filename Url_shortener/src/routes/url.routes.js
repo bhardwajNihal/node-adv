@@ -7,6 +7,7 @@ import { generateShortCode } from '../utils/generateShortCode.js';
 import { db } from '../db/index.js';
 import { urlsTable } from '../db/schema.js';
 import 'dotenv/config'
+import { eq } from 'drizzle-orm';
 
 export const urlRouter = express.Router();
 
@@ -54,10 +55,31 @@ urlRouter.post("/shorten", authMiddleware, async(req, res) => {
 })
 
 
-// // route to redirect to the original url, given a short url
-// urlRouter.get("/:shorturl", (req, res) => {
+// route to redirect to the original url, given a short url
+// no auth required, as shorturl should be accessed by public
+urlRouter.get("/:shorturl", async (req, res) => {
     
-// })
+    const code = req.params.shorturl;
+
+    // console.log(code);
+    // console.log(`${process.env.BASE_URL}/${code}`);
+    
+    
+    // search for the shortcode
+    // if exists, return the original url
+
+    const result = await db.select().from(urlsTable).where(eq(urlsTable.shortCode, `${process.env.BASE_URL}/${code}`))
+
+    if(result.length==0) return res.status(400).json({
+        error : "url not found!"
+    })
+
+    const originalUrl = result[0].originalUrl;
+
+    return res.redirect(originalUrl)
+
+    
+})
 
 
 // // get all urls created by the logged-in user
